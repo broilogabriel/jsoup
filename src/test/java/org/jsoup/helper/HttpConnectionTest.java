@@ -78,7 +78,7 @@ public class HttpConnectionTest {
         List<String> cookieStrings = new ArrayList<String>();
         cookieStrings.add(null);
         cookieStrings.add("");
-        cookieStrings.add("one");
+        cookieStrings.add("one"); // Malformed cookie should be ignored
         cookieStrings.add("two=");
         cookieStrings.add("three=;");
         cookieStrings.add("four=data; Domain=.example.com; Path=/");
@@ -86,8 +86,8 @@ public class HttpConnectionTest {
         headers.put("Set-Cookie", cookieStrings);
         HttpConnection.Response res = new HttpConnection.Response();
         res.processResponseHeaders(headers);
-        assertEquals(4, res.cookies().size());
-        assertEquals("", res.cookie("one"));
+        assertEquals(3, res.cookies().size());
+        assertTrue(res.cookie("one") == null);
         assertEquals("", res.cookie("two"));
         assertEquals("", res.cookie("three"));
         assertEquals("data", res.cookie("four"));

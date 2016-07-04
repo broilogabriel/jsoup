@@ -3,7 +3,6 @@ package org.jsoup.helper;
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.jsoup.parser.TokenQueue;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -813,15 +812,21 @@ public class HttpConnection implements Connection {
                 List<String> values = entry.getValue();
                 if (name.equalsIgnoreCase("Set-Cookie")) {
                     for (String value : values) {
-                        if (value == null)
+                        if (value == null || "".equals(value))
                             continue;
-                        TokenQueue cd = new TokenQueue(value);
-                        String cookieName = cd.chompTo("=").trim();
-                        String cookieVal = cd.consumeTo(";").trim();
-                        // ignores path, date, domain, validateTLSCertificates et al. req'd?
-                        // name not blank, value not null
-                        if (cookieName.length() > 0)
-                            cookie(cookieName, cookieVal);
+                        try {
+                            List<HttpCookie> parse = HttpCookie.parse(value);
+                            for (HttpCookie httpCookie : parse) {
+                                if (httpCookie.getName() != null && httpCookie.getName().length() > 0
+                                        && (!httpCookie.hasExpired() || httpCookie.getMaxAge() == -1)) {
+                                    cookie(httpCookie.getName(),
+                                            httpCookie.getValue());
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            // Ignore cookie if malformed
+                            // log.error("Could not parse cookie: " + value );
+                        }
                     }
                 } else { // combine same header names with comma: http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
                     if (values.size() == 1)
