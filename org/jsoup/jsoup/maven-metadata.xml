@@ -3,10 +3,10 @@
   <groupId>org.jsoup</groupId>
   <artifactId>jsoup</artifactId>
   <versioning>
-    <release>1.9.2-NewsWhip</release>
+    <release>1.9.2.1-NewsWhip</release>
     <versions>
-      <version>1.9.2-NewsWhip</version>
+      <version>1.9.2.1-NewsWhip</version>
     </versions>
-    <lastUpdated>20160704120917</lastUpdated>
+    <lastUpdated>20160705113621</lastUpdated>
   </versioning>
 </metadata>
